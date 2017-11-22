@@ -3,27 +3,45 @@
 #include <windows.h>
 #include <cstdio>
 #include <fstream>
+#include <vector>
+#include <sstream>
 
 using namespace std;
 
-struct OsobaWKsiazceAdresowej{
+/*struct OsobaWKsiazceAdresowej{
     int id;
     string imie;
     string nazwisko;
     int numerTelefonu;
     string email;
     string adres;
-};
+};*/
+string konwersjaIntNaString (int liczbaOsobZapisanychWKsiazceAdresowej){
+    ostringstream ss;
+    ss << liczbaOsobZapisanychWKsiazceAdresowej+1;
+    string str = ss.str();
 
-int wprowadzanieNowychOsobDoKsiazki (OsobaWKsiazceAdresowej zapisaneOsoby[], int liczbaOsobZapisanychWKsiazceAdresowej){
-    string imie,nazwisko, email, adres;
-    int id, numerTelefonu;
+    return str;
+}
+
+vector <string> zapiszWKsiazceAdresowej(vector <string> KsiazkaAdresowa, string imie,string nazwisko,string email, string numerTelefonu,string adres){
+    string rekordWKsiazceAdresowej = "";
+    rekordWKsiazceAdresowej =  konwersjaIntNaString(KsiazkaAdresowa.size())+ "|" + imie + "|" + nazwisko + "|" +email+ "|" +numerTelefonu+ "|" +adres + "|";
+    KsiazkaAdresowa.push_back(rekordWKsiazceAdresowej);
+
+    return KsiazkaAdresowa;
+}
+
+vector <string> wprowadzanieNowychOsobDoKsiazki (vector <string> KsiazkaAdresowa){
+
+    string imie,nazwisko, email, adres, numerTelefonu;
+    int id;
     int i = 0;
     cout << "Podaj Imie: "<<endl;
     cin>> imie;
     cout <<"Podaj nazwisko: "<<endl;
     cin >> nazwisko;
-    while (i <liczbaOsobZapisanychWKsiazceAdresowej){
+   /* while (i <liczbaOsobZapisanychWKsiazceAdresowej){
         if (zapisaneOsoby[i].imie == imie && zapisaneOsoby[i].nazwisko==nazwisko ){
             cout << "Taki uzytkownik juz istnieje"<<endl;
             cout << "Podaj Imie: "<<endl;
@@ -35,7 +53,7 @@ int wprowadzanieNowychOsobDoKsiazki (OsobaWKsiazceAdresowej zapisaneOsoby[], int
         }else{
             i++;
         }
-    }
+    }*/
     cout <<"Podaj email: "<<endl;
     cin >> email;
     cout <<"Podaj numer telefonu: "<<endl;
@@ -44,34 +62,24 @@ int wprowadzanieNowychOsobDoKsiazki (OsobaWKsiazceAdresowej zapisaneOsoby[], int
     cin.sync();
     getline(cin,adres);
 
-    zapisaneOsoby[liczbaOsobZapisanychWKsiazceAdresowej].imie = imie;
-    zapisaneOsoby[liczbaOsobZapisanychWKsiazceAdresowej].nazwisko = nazwisko;
-    zapisaneOsoby[liczbaOsobZapisanychWKsiazceAdresowej].email = email;
-    zapisaneOsoby[liczbaOsobZapisanychWKsiazceAdresowej].numerTelefonu = numerTelefonu;
-    zapisaneOsoby[liczbaOsobZapisanychWKsiazceAdresowej].adres = adres;
-    zapisaneOsoby[liczbaOsobZapisanychWKsiazceAdresowej].id = liczbaOsobZapisanychWKsiazceAdresowej+1;
-    cout << "Osoba zapisana w ksiazce adresowej pod numerem "<<zapisaneOsoby[liczbaOsobZapisanychWKsiazceAdresowej].id<<endl;
+    KsiazkaAdresowa = zapiszWKsiazceAdresowej(KsiazkaAdresowa, imie, nazwisko, email, numerTelefonu, adres);
+
+    cout << "Osoba zapisana w ksiazce adresowej pod numerem "<<KsiazkaAdresowa.size()<<endl;
     Sleep(3000);
 
     fstream plik;
     plik.open("Ksiazka_Adresowa.txt", ios::out | ios::app);
-    if (plik.good()==false && liczbaOsobZapisanychWKsiazceAdresowej!=0){
+    if (plik.good()==false && KsiazkaAdresowa.size()!=0){
         cout <<"plik nie istnieje!";
         exit(0);
     }
-    plik<<zapisaneOsoby[liczbaOsobZapisanychWKsiazceAdresowej].id<<endl;
-    plik<<zapisaneOsoby[liczbaOsobZapisanychWKsiazceAdresowej].imie<<endl;
-    plik<<zapisaneOsoby[liczbaOsobZapisanychWKsiazceAdresowej].nazwisko<<endl;
-    plik<<zapisaneOsoby[liczbaOsobZapisanychWKsiazceAdresowej].email<<endl;
-    plik<<zapisaneOsoby[liczbaOsobZapisanychWKsiazceAdresowej].numerTelefonu<<endl;
-    plik<<zapisaneOsoby[liczbaOsobZapisanychWKsiazceAdresowej].adres<<endl;
+    plik<<KsiazkaAdresowa[KsiazkaAdresowa.size()-1]<<endl;
     plik.close();
 
-
-    return liczbaOsobZapisanychWKsiazceAdresowej+1;
+    return KsiazkaAdresowa;
 }
 
-void wyszukiwaniePoImieniu (OsobaWKsiazceAdresowej zapisaneOsoby[], int liczbaOsobZapisanychWKsiazceAdresowej)
+/*void wyszukiwaniePoImieniu (vector <string> KsiazkaAdresowa, int liczbaOsobZapisanychWKsiazceAdresowej)
 {
     string imie;
     cout << "Podaj Imie: "<<endl;
@@ -114,22 +122,18 @@ void wyszukiwaniePoNazwisku (OsobaWKsiazceAdresowej zapisaneOsoby[], int liczbaO
         }
     }
     system ("pause");
-}
+}*/
 
-void pokazWszystkich (OsobaWKsiazceAdresowej zapisaneOsoby[], int liczbaOsobZapisanychWKsiazceAdresowej){
+void pokazWszystkich (vector <string> KsiazkaAdresowa){
     int i = 0;
     system ("cls");
-    while (i <liczbaOsobZapisanychWKsiazceAdresowej){
-        cout << zapisaneOsoby[i].imie<<endl;
-        cout << zapisaneOsoby[i].nazwisko<<endl;
-        cout << zapisaneOsoby[i].adres<<endl;
-        cout << zapisaneOsoby[i].email<<endl;
-        cout << zapisaneOsoby[i].numerTelefonu<<endl;
+    while (i <KsiazkaAdresowa.size()){
+        cout << KsiazkaAdresowa[i]<<endl;
         cout << "-----------------------"<<endl;
         i++;
     }
     system ("pause");
-}
+}/*
 bool sprawdzCzyMiesciSieWZakresieLiczbyZapisanychOsob (int rekordDoUsuniecia, int liczbaOsobZapisanychWKsiazceAdresowej){
         if (rekordDoUsuniecia<=liczbaOsobZapisanychWKsiazceAdresowej){
             return true;
@@ -192,9 +196,9 @@ int usuwanieRekorduZPliku (OsobaWKsiazceAdresowej zapisaneOsoby[], int liczbaOso
     plik.close();
 
     return (liczbaOsobZapisanychWKsiazceAdresowej-1);
-}
+}*/
 
-int wczytajOsobyZPliku (OsobaWKsiazceAdresowej zapisaneOsoby[], int liczbaOsobZapisanychWKsiazceAdresowej){
+vector <string> wczytajOsobyZPliku (vector <string> KsiazkaAdresowa){
     int nr_linii=1;
     int x=0;
     string linia;
@@ -205,43 +209,27 @@ int wczytajOsobyZPliku (OsobaWKsiazceAdresowej zapisaneOsoby[], int liczbaOsobZa
     while (getline(plik,linia)){
         switch(nr_linii){
         case 1:
-            zapisaneOsoby[x].id=atoi(linia.c_str());
-            break;
-        case 2:
-            zapisaneOsoby[x].imie = linia;
-            break;
-        case 3:
-            zapisaneOsoby[x].nazwisko=linia;
-            break;
-        case 4:
-            zapisaneOsoby[x].email=linia;
-            break;
-        case 5:
-            zapisaneOsoby[x].numerTelefonu=atoi(linia.c_str());
-            break;
-        case 6:
-            zapisaneOsoby[x].adres=linia;
+            KsiazkaAdresowa.push_back(linia);
             break;
         }
-        if (nr_linii==6){
+        if (nr_linii==1){
             nr_linii=0;
-            x++;
         }
         nr_linii++;
     }
 
     plik.close();
-    liczbaOsobZapisanychWKsiazceAdresowej = zapisaneOsoby[x-1].id;
-    return liczbaOsobZapisanychWKsiazceAdresowej;
+   return KsiazkaAdresowa;
+
 }
 
 
 int main(){
-    OsobaWKsiazceAdresowej zapisaneOsoby[1000];
-    int liczbaOsobZapisanychWKsiazceAdresowej = 0;
+    vector <string> KsiazkaAdresowa;
+
     char wybor=0;
 
-    liczbaOsobZapisanychWKsiazceAdresowej = wczytajOsobyZPliku(zapisaneOsoby, liczbaOsobZapisanychWKsiazceAdresowej);
+    KsiazkaAdresowa = wczytajOsobyZPliku(KsiazkaAdresowa);
 
     while (1){
         system ("cls");
@@ -252,7 +240,7 @@ int main(){
         cout << "9. Exit"<<endl;
         cin >> wybor;
         if (wybor =='1'){
-            liczbaOsobZapisanychWKsiazceAdresowej = wprowadzanieNowychOsobDoKsiazki (zapisaneOsoby, liczbaOsobZapisanychWKsiazceAdresowej);
+            KsiazkaAdresowa = wprowadzanieNowychOsobDoKsiazki(KsiazkaAdresowa);
         } else if (wybor =='2'){
             while (1){
                 int wybor2;
@@ -265,12 +253,12 @@ int main(){
 
                 cin >> wybor2;
 
-                if (wybor2 ==1){
-                    wyszukiwaniePoImieniu (zapisaneOsoby, liczbaOsobZapisanychWKsiazceAdresowej);
+                if /*(wybor2 ==1){
+                    wyszukiwaniePoImieniu (KsiazkaAdresowa, liczbaOsobZapisanychWKsiazceAdresowej);
                 } else if (wybor2 == 2){
-                    wyszukiwaniePoNazwisku (zapisaneOsoby, liczbaOsobZapisanychWKsiazceAdresowej);
-                } else if (wybor2 == 3){
-                    pokazWszystkich (zapisaneOsoby, liczbaOsobZapisanychWKsiazceAdresowej);
+                    wyszukiwaniePoNazwisku (KsiazkaAdresowa, liczbaOsobZapisanychWKsiazceAdresowej);
+                } else if */(wybor2 == 3){
+                    pokazWszystkich (KsiazkaAdresowa);
                 } else if (wybor2 == 9){
                     break;
                 }else {
@@ -278,13 +266,13 @@ int main(){
                     Sleep(2500);
                 }
             }
-        } else if (wybor =='3'){
-            liczbaOsobZapisanychWKsiazceAdresowej = usuwanieRekorduZPliku (zapisaneOsoby, liczbaOsobZapisanychWKsiazceAdresowej);
+        } /*else if (wybor =='3'){
+           liczbaOsobZapisanychWKsiazceAdresowej = usuwanieRekorduZPliku (KsiazkaAdresowa, liczbaOsobZapisanychWKsiazceAdresowej);
         } else if (wybor = '9'){
             cout << "Dziekuje za skorzystanie z ksiazki adresowej. Do zobaczenia."<<endl;
             Sleep(2500);
             exit(0);
-        }
+        }*/
     }
     return 0;
 }
